@@ -1,0 +1,26 @@
+version: '3'
+services:
+  webserver-service:
+    build: ./webserver
+    volumes:
+      - ./webserver:/usr/src/app
+    ports:
+      - 5001:80
+  zookeeper:
+    image: zookeeper
+    hostname: zookeeper
+    container_name: zookeeper
+    ports:
+      - 2181:2181
+  kafka-service:
+    hostname: kafka-service
+    container_name: kafka-service
+    depends_on:
+      - zookeeper
+    ports:
+      - 9092:9092
+    image: confluentinc/cp-kafka
+    environment:
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka-service:9092
+      - KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1
